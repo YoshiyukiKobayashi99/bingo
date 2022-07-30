@@ -1,0 +1,72 @@
+import java.util.Scanner;
+
+public class janken {
+	//表示する配列を用意
+	public static final String[] HAND = { "✊", "✌️", "✋"};
+	
+	public static void main(String[] args) {
+		//Scannerをインスタンス
+		Scanner scanner = new Scanner(System.in);
+		//結果をローカルで無くさないためにここで初期化
+		int result;
+		System.out.println("じゃんけんしよーーー！！！");
+		//まず実行したいのでdo whileを使用
+		do {
+			//それぞれの出す手を入力
+			int player1 = getHand(scanner, "Player1");
+			System.out.println("Player1: " + HAND[player1]);
+		    int player2 = getHand(scanner, "Player2");
+		    System.out.println("Player1: " + HAND[player1]);
+		    System.out.println("Player2: " + HAND[player2]);
+		    //結果を確認
+		    result = check(player1, player2);
+		    //結果が0の場合は繰り返す
+		} while (result == 0);
+		
+	    scanner.close();
+	}
+	
+	public static int getHand(Scanner scanner, String name) {
+		//結果をローカルで無くさないためにここで初期化
+		int hand;
+		try {
+			do {
+				//どっちのplayerかわかるように
+				System.out.println(name +"さん何を出しますか？\n✊：0 ✌️：1　✋：2");
+		
+				hand = scanner.nextInt();
+				//2よりも大きい場合はエラー文
+				if (hand > 2 ) {
+					System.out.println("0から2の数字を入力してください。");
+				}
+				//3以上の場合は繰り返す
+			} while (hand > 2 || hand < 0);
+			return hand;
+		} catch (Exception e) {
+			System.out.println("じゃんけん終了。\n正の数字を入力してください!");
+			scanner.close();
+			System.exit(0);
+			return 0;
+		}
+	}
+	
+	public static int check(int p1, int p2) {
+		//あいこの場合は0を返して繰り返し
+		if (p1 == p2) {
+			System.out.println("あいこで、、");
+			return 0;
+		//あいこ以外は終了（デフォルトは繰り返し）
+		} else {
+			switch ((p1 - p2 + 3) % 3) {
+			case 1:
+				System.out.println("Player1の負けです");
+				return 1;
+			case 2:
+				System.out.println("Player1の勝ちです");
+				return 1;
+			default:
+				return 0;
+			}
+		}
+	}
+}
