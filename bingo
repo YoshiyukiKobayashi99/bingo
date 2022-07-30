@@ -1,0 +1,151 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Random;
+
+
+public class BingoBingo {
+	//ビンゴした場合の配列
+	public static final String LINE = "[0, 0, 0, 0, 0]";
+
+	public static final ArrayList<Integer> list = new ArrayList<Integer>();
+
+	public static void main(String[] args) {
+		//1-75のランダムな配列生成
+		randomNumberList();
+		//ビンゴカード生成  
+		int[][] card =creatBingoCard();
+		int count = 0; 
+		 
+		int[] dst = Arrays.stream(card).mapToInt(row -> row[0]).toArray();
+		    System.out.println(Arrays.toString(dst));
+		
+		bingoStart: for (int i = 0; i < 76; i++) {
+			//listから順に引く
+			int num = list.get(i);
+			
+			for (int j = 0; j < 5; j++) {
+				for (int k = 0; k < 5; k++) {
+					if(card[j][k] > 0) {
+						if(card[j][k] == num) {
+							card[j][k] = 0;
+							boolean bingoCheck = bingoCheck(card,j,k);
+							if(bingoCheck) {
+								count = i;
+								System.out.println(count + "ターン");
+								System.out.println("Bingo!!!!!!!!!!");
+								for(int l = 0; l < 5; l++) {
+									System.out.println(Arrays.toString(card[l]));
+								}
+								break bingoStart;
+							}
+						}
+					}	
+				}
+			}
+		}
+	}
+
+
+	public static void randomNumberList() {
+		for (int i = 1; i <= 75; i++) { 
+			//配列に1-75を追加する
+			list.add(i);
+			//配列の中身をシャッフルする
+			Collections.shuffle(list);
+		}
+	}
+	
+	public static int[][] creatBingoCard() {
+		//5*5の二次元配列
+		int[][] bingo = new int[5][5]; 
+		// 残っている要素のリスト
+		ArrayList<Integer> remaining = new ArrayList<>(list); 
+		// 乱数生成器
+		Random random = new Random();
+		for (int i = 0; i < 5; i++) { 
+			for (int j = 0; j< 5; j++) {
+				// 残っている要素の数
+				int remainingCount = remaining.size(); 
+				// ランダムに選択されたインデックス
+			    int index = random.nextInt(remainingCount);
+			    //ランダムに選択された要素を取り出す。
+			    Integer element = remaining.remove(index); 
+			    //取り出した要素を代入
+				bingo[i][j] = element;
+			}
+			//真ん中を開ける
+			bingo[2][2] = 0;
+			//カードを表示
+			System.out.println(Arrays.toString(bingo[i]));
+		}
+		return bingo;
+	}
+	/**
+	 * 縦横斜めのどこかでビンゴしているか
+	 * 
+	 * @param card ビンゴカード
+	 * @param row 空いた行
+	 * @param line 空いた列
+	 * @return ビンゴしたかどうか
+	 */
+	public static boolean bingoCheck(int[][] card, int row, int line) {
+		boolean bingo = bingoRow(card,row) || bingoLine(card, line) || bingoCross(card, row, line);
+		return bingo;
+	}
+	
+	/**
+	 * 空いた列でビンゴしているか
+	 * 
+	 * @param card ビンゴカード
+	 * @param row 空いた行
+	 * @return ビンゴしたかどうか
+	 */
+	public static boolean bingoRow(int[][] card, int row) {
+		return checkLine(Arrays.toString(card[row]));
+	}
+	
+	/**
+	 * 空いた行でビンゴしているか
+	 * 
+	 * @param card ビンゴカード
+	 * @param line 空いた列
+	 * @return ビンゴしたかどうか
+	 */
+	public static boolean bingoLine(int[][] card,  int line) {
+		int[] newLine = Arrays.stream(card).mapToInt(row -> row[line]).toArray();
+		return checkLine(Arrays.toString(newLine));
+	}
+	
+	/**
+	 * 斜めでビンゴしているか
+	 * 
+	 * @param card ビンゴカード
+	 * @param row 空いた行
+	 * @param line 空いた列
+	 * @return ビンゴしたかどうか
+	 */
+	public static boolean bingoCross(int[][] card, int row, int line) {
+
+		if(row == line || row == 4 - line) {
+			int[] cross = new int[5];
+            for (int i = 0; i < 5; i++) {
+                int j = row == line ? i : 4 - i;
+                cross[i] = card[j][i];
+            }
+			
+			return checkLine(Arrays.toString(cross));
+		}
+		return false;
+	}
+	
+	/**
+	 * １行の配列が全て0かどうか
+	 * 
+	 * @param line 文字列1行
+	 * @return ビンゴしたかどうか
+	 */
+	public static boolean checkLine(String line) {
+		return LINE.equals(line);
+	}
+}
